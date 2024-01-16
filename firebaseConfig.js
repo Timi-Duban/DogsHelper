@@ -1,10 +1,8 @@
 import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyCmFaAZWUE0nU7_np5gIkIs-Ak4WitGju0",
     authDomain: "dogs-helper-firebase.firebaseapp.com",
@@ -15,6 +13,23 @@ const firebaseConfig = {
     measurementId: "G-BNK8S8HE79"
 };
 
+/* if (process.env.EXPO_PUBLIC_EMULATE_FIRESTORE === 'emulate') {
+    console.log('Emulating firestore service')
+    config = {
+        databaseURL: 'http://localhost:9000?ns=dogs-helper-firebase'
+    }
+} */
+
+// Initialize Analytics
+const analytics = getAnalytics(app);
+logEvent(analytics, 'analytics_initialized');
+
+// Initialize Firebase Authentication
+const auth = getAuth(app);
+if (process.env.EXPO_PUBLIC_EMULATE_AUTH === 'emulate') {
+    console.log('Emulating auth service')
+    connectAuthEmulator(auth, "http://127.0.0.1:9099");
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
