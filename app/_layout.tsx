@@ -10,8 +10,3 @@ export default function RootLayout() {
         </SafeAreaView>
     );
 }
-
-// Expo router: define initial screen
-export const unstable_settings = {
-    initialRouteName: 'index',
-};
