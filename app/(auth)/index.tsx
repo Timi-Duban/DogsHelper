@@ -1,5 +1,5 @@
-import SignIn from '@/auth/components/SignIn';
+import LoginScreen from "./login";
 
 export default function Page() {
-    return <SignIn />;
+    return <LoginScreen />;
 }

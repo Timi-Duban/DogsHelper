@@ -1,8 +1,10 @@
-// import 'expo-router/entry'
 import App from './app/(auth)';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function Page() {
     return (
-        <App />
+        <SafeAreaProvider>
+            <App />
+        </SafeAreaProvider>
     );
 }
