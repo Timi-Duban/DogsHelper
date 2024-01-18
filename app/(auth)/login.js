@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TouchableOpacity, StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import Background from '@/auth/components/Background'
 import Logo from '@/auth/components/Logo'
 import Header from '@/auth/components/Header'
@@ -10,12 +10,13 @@ import TextInput from '@/auth/components/TextInput'
 import { theme } from '@/auth/core/theme'
 import { emailValidator } from '@/auth/helpers/emailValidator'
 import { passwordValidator } from '@/auth/helpers/passwordValidator'
+import { signInWithPassword } from '@/auth/services/AuthService';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
-  const onLoginPressed = () => {
+  const onLoginPressed = async () => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -23,6 +24,8 @@ export default function LoginScreen() {
       setPassword({ ...password, error: passwordError })
       return
     }
+    await signInWithPassword(email.value, password.value);
+    router.replace('/');
   }
 
   return (

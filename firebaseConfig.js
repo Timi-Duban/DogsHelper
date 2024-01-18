@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
+import { getAnalytics, logEvent } from "firebase/analytics";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -20,6 +20,9 @@ const firebaseConfig = {
     }
 } */
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
 // Initialize Analytics
 const analytics = getAnalytics(app);
 logEvent(analytics, 'analytics_initialized');
@@ -31,5 +34,4 @@ if (process.env.EXPO_PUBLIC_EMULATE_AUTH === 'emulate') {
     connectAuthEmulator(auth, "http://127.0.0.1:9099");
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export {app, auth}

@@ -34,5 +34,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# firebase
+firestore-debug.log
+ui-debug.log
+
 # editor
 .vscode

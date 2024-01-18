@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, TouchableOpacity } from 'react-native'
 import { Text } from 'react-native-paper'
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import Background from '@/auth/components/Background'
 import Logo from '@/auth/components/Logo'
 import Header from '@/auth/components/Header'
@@ -11,38 +11,30 @@ import BackButton from '@/auth/components/BackButton'
 import { theme } from '@/auth/core/theme'
 import { emailValidator } from '@/auth/helpers/emailValidator'
 import { passwordValidator } from '@/auth/helpers/passwordValidator'
-import { nameValidator } from '@/auth/helpers/nameValidator'
+import { registerWithPassword } from '@/auth/services/AuthService';
 
 export default function RegisterScreen() {
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
-  const onSignUpPressed = () => {
-    const nameError = nameValidator(name.value)
+  const onSignUpPressed = async () => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError })
+    if (emailError || passwordError) {
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
       return
     }
+    await registerWithPassword(email.value, password.value);
+    router.replace('/');
   }
 
   return (
     <Background>
-      <BackButton goBack={() => console.log('Go back')} />
+      <BackButton />
       <Logo />
       <Header>Create Account</Header>
-      <TextInput
-        label="Name"
-        returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
-      />
       <TextInput
         label="Email"
         returnKeyType="next"

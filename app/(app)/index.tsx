@@ -1,5 +1,6 @@
-import { Text } from "react-native";
+import { signOut } from "@/auth/services/AuthService";
+import { Button } from "react-native";
 
 export default function Page() {
-    return <Text>You shouldn't be seing this</Text>;
+    return <Button title="Sign out" onPress={() => signOut()} />;
 }
