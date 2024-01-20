@@ -36,6 +36,7 @@ yarn-error.*
 
 # firebase
 firestore-debug.log
+firebase-debug.log
 ui-debug.log
 
 # editor
