@@ -7,7 +7,7 @@ import TextInput from '@/auth/components/TextInput'
 import Button from '@/auth/components/Button'
 import { emailValidator } from '@/auth/helpers/emailValidator'
 import { router } from 'expo-router';
-import { sendResetPassword } from '@/auth/services/AuthService'
+import { sendResetPassword } from '@/auth/AuthService'
 
 export default function ResetPasswordScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })

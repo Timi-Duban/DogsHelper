@@ -38,7 +38,5 @@ export const signOut = async () => {
 }
 
 const handleAuthError = (error: AuthError) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
     throw error;
 }

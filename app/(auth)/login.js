@@ -7,10 +7,10 @@ import Logo from '@/auth/components/Logo'
 import Header from '@/auth/components/Header'
 import Button from '@/auth/components/Button'
 import TextInput from '@/auth/components/TextInput'
-import { theme } from '@/auth/core/theme'
+import { theme } from '@/global/theme'
 import { emailValidator } from '@/auth/helpers/emailValidator'
 import { passwordValidator } from '@/auth/helpers/passwordValidator'
-import { signInWithPassword } from '@/auth/services/AuthService';
+import { signInWithPassword } from '@/auth/AuthService';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })

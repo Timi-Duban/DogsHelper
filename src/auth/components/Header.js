@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, StyleSheet } from 'react-native'
-import { theme } from '../core/theme'
+import { theme } from '../../global/theme'
 
 export default function Header(props) {
   return <Text style={styles.header} {...props} />

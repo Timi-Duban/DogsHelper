@@ -1,7 +1,8 @@
-import React from 'react'
+import { theme } from '@/global/theme';
 import { Slot, router } from 'expo-router';
-import { auth } from 'firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from 'firebaseConfig';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export default function AppLayout() {
@@ -22,5 +23,11 @@ export default function AppLayout() {
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, alignItems: "center", margin: 10}
+    container: {
+        flex: 1,
+        margin: 10,
+        padding: 10,
+        backgroundColor: theme.colors.surface,
+        borderRadius: 16,
+    }
 })

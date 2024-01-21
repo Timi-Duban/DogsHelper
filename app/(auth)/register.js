@@ -8,10 +8,10 @@ import Header from '@/auth/components/Header'
 import Button from '@/auth/components/Button'
 import TextInput from '@/auth/components/TextInput'
 import BackButton from '@/auth/components/BackButton'
-import { theme } from '@/auth/core/theme'
+import { theme } from '@/global/theme'
 import { emailValidator } from '@/auth/helpers/emailValidator'
 import { passwordValidator } from '@/auth/helpers/passwordValidator'
-import { registerWithPassword } from '@/auth/services/AuthService';
+import { registerWithPassword } from '@/auth/AuthService';
 
 export default function RegisterScreen() {
   const [name, setName] = useState({ value: '', error: '' })
