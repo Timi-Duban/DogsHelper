@@ -2,6 +2,7 @@ import React from 'react'
 import { Slot, router } from 'expo-router';
 import { auth } from 'firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
+import { StyleSheet, View } from 'react-native';
 
 export default function AppLayout() {
 
@@ -13,5 +14,13 @@ export default function AppLayout() {
             router.replace('/login')
         }
     });
-    return <Slot />;
+    return (
+        <View style={styles.container}>
+            <Slot />
+        </View>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {flex: 1, alignItems: "center", margin: 10}
+})

@@ -1,7 +1,9 @@
+import { getAnalytics, isSupported, logEvent } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
-import { getAnalytics, logEvent } from "firebase/analytics";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { connectAuthEmulator, getAuth, getReactNativePersistence, initializeAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from "react-native";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,14 +20,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Analytics
-const analytics = getAnalytics(app);
-logEvent(analytics, 'analytics_initialized');
+isSupported().then(supported => {
+    if (supported) {
+        const analytics = getAnalytics(app);
+        logEvent(analytics, 'analytics_initialized');
+    }
+});
 
 // Initialize Firebase Authentication
+initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 const auth = getAuth(app);
 if (process.env.EXPO_PUBLIC_EMULATE_AUTH === 'emulate') {
     console.log('Emulating auth service')
-    connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    if (Platform.OS === 'android') {
+        connectAuthEmulator(auth, "http://10.0.2.2:9099");
+    } else {
+        connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    }
 }
 
 // Initialize Firestore
@@ -35,4 +48,4 @@ if (process.env.EXPO_PUBLIC_EMULATE_FIRESTORE === 'emulate') {
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
 }
 
-export {app, auth}
+export { app, auth };
