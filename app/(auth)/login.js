@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { Text } from 'react-native-paper'
 import { Link, router } from 'expo-router';
 import Background from '@/auth/components/Background'
@@ -24,8 +24,12 @@ export default function LoginScreen() {
       setPassword({ ...password, error: passwordError })
       return
     }
-    await signInWithPassword(email.value, password.value);
-    router.replace('/');
+    try {
+      await signInWithPassword(email.value, password.value);
+      router.replace('/');
+    } catch (error) {
+      return Alert.alert('Error', error.message)
+    }
   }
 
   return (
