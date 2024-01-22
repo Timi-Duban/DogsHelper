@@ -1,8 +1,8 @@
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getAnalytics, isSupported, logEvent } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, getReactNativePersistence, initializeAuth } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from "react-native";
 
 // Your web app's Firebase configuration
@@ -28,8 +28,12 @@ isSupported().then(supported => {
 });
 
 // Initialize Firebase Authentication
+// const persistence = Platform.OS === 'web'
+//     ? browserSessionPersistence
+//     : getReactNativePersistence(ReactNativeAsyncStorage);
+// initializeAuth(app, {persistence});
 initializeAuth(app, {
-    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+    persistence: process.env.NODE_ENV === 'test' ? null : getReactNativePersistence(ReactNativeAsyncStorage)
 });
 const auth = getAuth(app);
 if (process.env.EXPO_PUBLIC_EMULATE_AUTH === 'emulate') {
@@ -42,10 +46,10 @@ if (process.env.EXPO_PUBLIC_EMULATE_AUTH === 'emulate') {
 }
 
 // Initialize Firestore
-const db = getFirestore();
+const db = getFirestore(app);
 if (process.env.EXPO_PUBLIC_EMULATE_FIRESTORE === 'emulate') {
     console.log('Emulating firestore service')
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
 }
 
-export { app, auth };
+export { app, auth, db };
