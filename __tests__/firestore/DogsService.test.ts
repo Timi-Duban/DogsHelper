@@ -49,10 +49,11 @@ describe('Test dogs service', () => {
     });
 
     it('Can UPDATE dog.', async () => {
-        const dog = await updateDogName(initialDog.id, 'updatedName', firestore);
+        await updateDogName(initialDog.id, 'updatedName', firestore);
+        const dog = (await getDbDogs(firestore)).find(doc => doc.id === initialDog.id);
         expect(dog).toBeDefined();
-        expect(dog.id).toEqual(initialDog.id);
-        expect(dog.data.name).toEqual('updatedName');
+        expect(dog!.id).toEqual(initialDog.id);
+        expect(dog!.data().name).toEqual('updatedName');
     });
 
     it('Can DELETE dog.', async () => {
