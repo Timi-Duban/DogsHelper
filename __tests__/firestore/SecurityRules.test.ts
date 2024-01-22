@@ -1,13 +1,5 @@
-import fs from 'fs';
-import { RulesTestContext, RulesTestEnvironment, assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
-
-const initialDoc = {id: '1', data: { name: "default" }}
-const getGroups = (user: RulesTestContext) => {
-    return user.firestore().collection('groups');
-}
-const getExistingDoc = (user: RulesTestContext) => {
-    return getGroups(user).doc(initialDoc.id);
-}
+import { RulesTestContext, RulesTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
+import { createInitialDoc, getExistingGroup, getGroups, initializeSimilarEnv } from './__utils__/Helpers';
 
 describe('Test root database access', () => {
     let testEnv: RulesTestEnvironment;
@@ -15,26 +7,13 @@ describe('Test root database access', () => {
     let unauthenticatedUser: RulesTestContext;
 
     beforeAll(async () => {
-        testEnv = await initializeTestEnvironment({
-            projectId: "dogs-helper-firebase",
-            firestore: {
-                rules: fs.readFileSync("firestore.rules", "utf8"),
-                host: 'localhost',
-                port: 8080,
-            }
-        });
+        testEnv = await initializeSimilarEnv();
     });
 
     beforeEach(async () => {
         // Setup initial user data
         await testEnv.clearFirestore();
-        await testEnv.withSecurityRulesDisabled(context => {
-            const firestoreWithoutRule = context.firestore()
-            return firestoreWithoutRule
-                .collection('groups')
-                .doc(initialDoc.id)
-                .set(initialDoc.data)
-        });
+        await createInitialDoc(testEnv);
 
         // Create authenticated and unauthenticated users for testing
         authenticatedUser = testEnv.authenticatedContext("testUserId");
@@ -58,10 +37,10 @@ describe('Test root database access', () => {
     });
 
     it('Only authenticated user can READ with get.', async () => {
-        const readByAuthenticatedUser = getExistingDoc(authenticatedUser).get();
+        const readByAuthenticatedUser = getExistingGroup(authenticatedUser).get();
         await assertSucceeds(readByAuthenticatedUser);
 
-        const readByUnauthenticatedUser = getExistingDoc(unauthenticatedUser).get();
+        const readByUnauthenticatedUser = getExistingGroup(unauthenticatedUser).get();
         await assertFails(readByUnauthenticatedUser);
     });
 
@@ -75,18 +54,18 @@ describe('Test root database access', () => {
     });
 
     it('Only authenticated user can UPDATE.', async () => {
-        const updateByAuthenticatedUser = getExistingDoc(authenticatedUser).update({ name: "authenticated name" });
+        const updateByAuthenticatedUser = getExistingGroup(authenticatedUser).update({ name: "authenticated name" });
         await assertSucceeds(updateByAuthenticatedUser);
 
-        const updateByUnauthenticatedUser = getExistingDoc(unauthenticatedUser).update({ name: "authenticated name" });
+        const updateByUnauthenticatedUser = getExistingGroup(unauthenticatedUser).update({ name: "authenticated name" });
         await assertFails(updateByUnauthenticatedUser);
     });
 
     it('Only authenticated user can DELETE.', async () => {
-        const deleteByUnauthenticatedUser = getExistingDoc(unauthenticatedUser).delete();
+        const deleteByUnauthenticatedUser = getExistingGroup(unauthenticatedUser).delete();
         await assertFails(deleteByUnauthenticatedUser);
 
-        const deleteByAuthenticatedUser = getExistingDoc(authenticatedUser).delete();
+        const deleteByAuthenticatedUser = getExistingGroup(authenticatedUser).delete();
         await assertSucceeds(deleteByAuthenticatedUser);
     });
 });
