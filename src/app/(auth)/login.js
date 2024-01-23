@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
-import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
-import { Text } from 'react-native-paper'
-import { Link, router } from 'expo-router';
-import Background from '@/auth/components/Background'
-import Logo from '@/auth/components/Logo'
-import Header from '@/auth/components/Header'
-import Button from '@/auth/components/Button'
-import TextInput from '@/auth/components/TextInput'
-import { theme } from '@/global/theme'
-import { emailValidator } from '@/auth/helpers/emailValidator'
-import { passwordValidator } from '@/auth/helpers/passwordValidator'
 import { signInWithPassword } from '@/auth/AuthService';
+import Background from '@/auth/components/Background';
+import Button from '@/auth/components/Button';
+import Header from '@/auth/components/Header';
+import Logo from '@/auth/components/Logo';
+import TextInput from '@/auth/components/TextInput';
+import { emailValidator } from '@/auth/helpers/emailValidator';
+import { passwordValidator } from '@/auth/helpers/passwordValidator';
+import { theme } from '@/global/theme';
+import { Link, router } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Text } from 'react-native-paper';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })

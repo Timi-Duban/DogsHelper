@@ -1,5 +1,5 @@
 import { theme } from '@/global/theme';
-import { Slot, router } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from 'firebaseConfig';
 import React from 'react';
@@ -16,7 +16,18 @@ export default function AppLayout() {
     });
     return (
         <View style={styles.container}>
-            <Slot />
+            <Stack
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: theme.colors.secondary,
+                    },
+                    headerTintColor: 'white',
+                    headerBackVisible: true,
+                    headerTitleAlign: 'center',
+                    title: "Dogs Helper",
+                }}
+                initialRouteName='/'
+            />
         </View>
     );
 }
