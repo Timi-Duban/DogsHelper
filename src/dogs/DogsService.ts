@@ -5,8 +5,12 @@ const dogsCollection = (testDb?: Firestore) => collection(testDb ?? db, "groups"
 const defGroup = (testDb?: Firestore) => doc(testDb ?? db, "groups", "1");
 
 export const createDog = async (name: string, testDb?: Firestore) => {
-    const docRef = await addDoc(collection(testDb ?? db, "groups/1/dogs"), {name});
-    return { id: docRef.id, data: {name} };
+    if (name) {
+        const docRef = await addDoc(collection(testDb ?? db, "groups/1/dogs"), {name});
+        return { id: docRef.id, data: {name} };
+    } else {
+        throw new Error('Cannot create a dog with an empty name')
+    }
 };
 
 export const getDogs = async (testDb?: Firestore) => {
