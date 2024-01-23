@@ -15,13 +15,15 @@ const DogsList = () => {
     const [dogs, setDogs] = useState<DogType[]>([]);
     useEffect( () => {
         getDogs().then( res => {
-            setDogs(res as DogType[]);
+            setDogs(res.map(dog => {
+                return {id: dog.id, name: dog.data?.name}
+            }) as DogType[]);
         })
     }, [])
 
     return (
         <View style={styles.grid}>
-            {dogs?.map(dog => <Dog name={dog.data.name} key={dog.id} />)}
+            {dogs?.map(dog => <Dog name={dog.name} key={dog.id} />)}
         </View>
     )
 };

@@ -2,7 +2,7 @@ import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateD
 import { db } from "../../firebaseConfig";
 import { extractDocsFromQuerySnapchot } from "@/FirestoreService";
 
-export type DogType = {id: string, data: {name: string}}
+export type DogType = {id: string, name: string}
 const dogsCollection = (testDb?: Firestore) => collection(testDb ?? db, "groups", "1", "dogs");
 const defGroup = (testDb?: Firestore) => doc(testDb ?? db, "groups", "1");
 
