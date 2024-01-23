@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 28,
         fontWeight: "bold",
-        margin: 5,
+        margin: 20,
         color: theme.colors.primary,
     }
 })

@@ -1,4 +1,5 @@
 import { signOut } from "@/auth/AuthService";
+import DogsList from "@/dogs/components/DogsList";
 import Title from "@/global/components/Title";
 import { theme } from "@/global/theme";
 import { Link } from "expo-router";
@@ -12,8 +13,9 @@ export default function Page() {
                 href="/dogs/create"
                 style={styles.linkStyle}
             >
-                Create Dog
+                Create new dog
             </Link>
+            <DogsList />
             <View style={styles.bottomView}>
                 <Button
                     title="Sign out"
@@ -32,9 +34,12 @@ const styles = StyleSheet.create({
     },
     linkStyle: {
         alignSelf: 'center',
-        color: theme.colors.text,
-        fontSize: 16,
-        fontWeight: '500',
-        fontStyle: 'italic',
+        color: theme.colors.surface,
+        backgroundColor: theme.colors.secondary,
+        borderRadius: 4,
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 10,
+        padding: 10,
     },
 })
