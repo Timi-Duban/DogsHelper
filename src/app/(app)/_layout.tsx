@@ -6,7 +6,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export default function AppLayout() {
-
     onAuthStateChanged(auth, (user) => {
         if (user) {
             // console.log('User signed in: ', user.email)
@@ -14,6 +13,7 @@ export default function AppLayout() {
             router.replace('/login')
         }
     });
+    
     return (
         <View style={styles.container}>
             <Stack
