@@ -26,7 +26,7 @@ export default function LoginScreen() {
     }
     try {
       await signInWithPassword(email.value, password.value);
-      router.replace('/');
+      router.replace('/dogs');
     } catch (error) {
       return Alert.alert('Error', error.message)
     }

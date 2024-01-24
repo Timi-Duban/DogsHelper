@@ -1,9 +1,10 @@
+import { DogsStoreContext } from "@/app/(app)/_layout";
 import { theme } from "@/global/theme";
-import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { DogType, getDogs } from "../DogsService";
 
-const Dog = (props: {name: string}) => {
+const DogComponent = (props: { name: string }) => {
     return (
         <View style={styles.dogView}>
             <Text style={styles.dogText}>{props.name}</Text>
@@ -11,22 +12,15 @@ const Dog = (props: {name: string}) => {
     );
 }
 
-const DogsList = () => {
-    const [dogs, setDogs] = useState<DogType[]>([]);
-    useEffect( () => {
-        getDogs().then( res => {
-            setDogs(res.map(dog => {
-                return {id: dog.id, name: dog.data?.name}
-            }) as DogType[]);
-        })
-    }, [])
 
+const DogsList = observer(() => {
+    const dogsStore = useContext(DogsStoreContext);
     return (
         <View style={styles.grid}>
-            {dogs?.map(dog => <Dog name={dog.name} key={dog.id} />)}
+            {dogsStore.getDogs().map(dog => <DogComponent name={dog.name} key={dog.id} />)}
         </View>
     )
-};
+});
 
 const styles = StyleSheet.create({
     grid: {
@@ -34,6 +28,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         width: '95%',
         marginHorizontal: 'auto',
+        paddingHorizontal: 5,
+        alignSelf: 'center',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
     },

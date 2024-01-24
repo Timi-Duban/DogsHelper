@@ -10,7 +10,7 @@ const create = () => {
     const onPress = async () => {
         try {
             await createDog(name);
-            router.canGoBack() ? router.back() : router.replace('/');
+            router.canGoBack() ? router.back() : router.replace('/dogs');
         } catch (error: any) {
             Alert.alert('Error', error.message)
         }

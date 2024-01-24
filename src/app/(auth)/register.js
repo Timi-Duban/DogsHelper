@@ -1,20 +1,18 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, TouchableOpacity } from 'react-native'
-import { Text } from 'react-native-paper'
-import { Link, router } from 'expo-router';
-import Background from '@/auth/components/Background'
-import Logo from '@/auth/components/Logo'
-import Header from '@/auth/components/Header'
-import Button from '@/auth/components/Button'
-import TextInput from '@/auth/components/TextInput'
-import BackButton from '@/auth/components/BackButton'
-import { theme } from '@/global/theme'
-import { emailValidator } from '@/auth/helpers/emailValidator'
-import { passwordValidator } from '@/auth/helpers/passwordValidator'
 import { registerWithPassword } from '@/auth/AuthService';
+import Background from '@/auth/components/Background';
+import Button from '@/auth/components/Button';
+import Header from '@/auth/components/Header';
+import Logo from '@/auth/components/Logo';
+import TextInput from '@/auth/components/TextInput';
+import { emailValidator } from '@/auth/helpers/emailValidator';
+import { passwordValidator } from '@/auth/helpers/passwordValidator';
+import { theme } from '@/global/theme';
+import { Link, router } from 'expo-router';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Text } from 'react-native-paper';
 
 export default function RegisterScreen() {
-  const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
@@ -27,12 +25,11 @@ export default function RegisterScreen() {
       return
     }
     await registerWithPassword(email.value, password.value);
-    router.replace('/');
+    router.replace('/dogs');
   }
 
   return (
     <Background>
-      <BackButton />
       <Logo />
       <Header>Create Account</Header>
       <TextInput
@@ -65,7 +62,7 @@ export default function RegisterScreen() {
       </Button>
       <View style={styles.row}>
         <Text>Already have an account? </Text>
-        <Link href="/login" asChild>
+        <Link href="/" asChild>
             <TouchableOpacity>
             <Text style={styles.link}>Login</Text>
             </TouchableOpacity>

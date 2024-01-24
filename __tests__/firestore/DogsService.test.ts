@@ -1,6 +1,6 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore, collection, doc, getDocs, setDoc } from 'firebase/firestore';
-import { createDog, deleteDog, getDog, getDogs, updateDogName } from '../../src/dogs/DogsService';
+import { createDog, deleteDog, getDog, readDogs, updateDogName } from '../../src/dogs/DogsService';
 import { initializeSimilarEnv } from './__utils__/Helpers';
 
 const initialDog = { id: '1', name: "initial Dog" }
@@ -17,11 +17,11 @@ describe('Test dogs service', () => {
 
     beforeAll(async () => {
         testEnv = await initializeSimilarEnv();
-        firestore = testEnv.authenticatedContext("testUserId").firestore() as unknown as Firestore;
     });
 
     beforeEach(async () => {
         await testEnv.clearFirestore();
+        firestore = testEnv.authenticatedContext("testUserId").firestore() as unknown as Firestore;
         await createInitialDog(firestore);
     })
 
@@ -35,7 +35,7 @@ describe('Test dogs service', () => {
     });
 
     it('Can READ dog list.', async () => {
-        const dogs = await getDogs(firestore);
+        const dogs = await readDogs(firestore);
         expect(dogs).toBeDefined();
         expect(dogs.length).toEqual(1);
         expect(dogs[0].name).toEqual(initialDog.name);

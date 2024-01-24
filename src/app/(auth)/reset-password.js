@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import Background from '@/auth/components/Background'
-import BackButton from '@/auth/components/BackButton'
-import Logo from '@/auth/components/Logo'
-import Header from '@/auth/components/Header'
-import TextInput from '@/auth/components/TextInput'
-import Button from '@/auth/components/Button'
-import { emailValidator } from '@/auth/helpers/emailValidator'
-import { router } from 'expo-router';
 import { sendResetPassword } from '@/auth/AuthService'
+import BackButton from '@/auth/components/BackButton'
+import Background from '@/auth/components/Background'
+import Button from '@/auth/components/Button'
+import Header from '@/auth/components/Header'
+import Logo from '@/auth/components/Logo'
+import TextInput from '@/auth/components/TextInput'
+import { emailValidator } from '@/auth/helpers/emailValidator'
+import { router } from 'expo-router'
+import React, { useState } from 'react'
 
 export default function ResetPasswordScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
@@ -19,7 +19,7 @@ export default function ResetPasswordScreen() {
       return
     }
     await sendResetPassword(email.value);
-    router.replace('/login')
+    router.replace('/')
   }
 
   return (
