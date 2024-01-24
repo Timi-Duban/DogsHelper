@@ -3,9 +3,9 @@ import { Firestore, collection, doc, getDocs, setDoc } from 'firebase/firestore'
 import { createDog, deleteDog, getDog, getDogs, updateDogName } from '../../src/dogs/DogsService';
 import { initializeSimilarEnv } from './__utils__/Helpers';
 
-const initialDog = { id: '1', data: { name: "initial Dog" } }
+const initialDog = { id: '1', name: "initial Dog" }
 const createInitialDog = async (firestore: Firestore) => {
-    await setDoc(doc(firestore, "groups/1/dogs", initialDog.id), initialDog.data);
+    await setDoc(doc(firestore, "groups/1/dogs", initialDog.id), { name: initialDog.name });
 }
 const getDbDogs = async (firestore: Firestore) => {
     return (await getDocs(collection(firestore, "groups", "1", "dogs"))).docs;
@@ -27,9 +27,10 @@ describe('Test dogs service', () => {
 
     it('Can CREATE dog.', async () => {
         const initialDogs = await getDbDogs(firestore);
+        const initialDogsLength = initialDogs.length;
         const newDog = await createDog('newDog', firestore);
         const finalDogs = await getDbDogs(firestore);
-        expect(initialDogs.length).toBeLessThan(finalDogs.length);
+        expect(initialDogsLength).toBeLessThan(finalDogs.length);
         expect(finalDogs.find(dog => dog.id === newDog.id)).toBeDefined;
     });
 
@@ -37,7 +38,7 @@ describe('Test dogs service', () => {
         const dogs = await getDogs(firestore);
         expect(dogs).toBeDefined();
         expect(dogs.length).toEqual(1);
-        expect(dogs[0].data()).toEqual(initialDog.data);
+        expect(dogs[0].name).toEqual(initialDog.name);
         expect(dogs[0].id).toEqual(initialDog.id);
     });
 
@@ -45,7 +46,7 @@ describe('Test dogs service', () => {
         const dog = await getDog(initialDog.id, firestore);
         expect(dog).toBeDefined();
         expect(dog.id).toEqual(initialDog.id);
-        expect(dog.data).toEqual(initialDog.data);
+        expect(dog.name).toEqual(initialDog.name);
     });
 
     it('Can UPDATE dog.', async () => {

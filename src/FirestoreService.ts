@@ -1,16 +1,21 @@
-import { QueryDocumentSnapshot, DocumentData, DocumentSnapshot } from "firebase/firestore";
+import { DocumentData, DocumentSnapshot, QueryDocumentSnapshot } from "firebase/firestore";
 
 export const getTodayDate = () => {
     var date = new Date();
-    date.setUTCHours(12,0,0,0);
+    date.setUTCHours(12, 0, 0, 0);
     return date;
 };
 
-type QuerySnapchotArg = DocumentSnapshot<DocumentData, DocumentData> 
-    | QueryDocumentSnapshot<DocumentData, DocumentData>[]
-export const extractDocsFromQuerySnapchot = (snap : QuerySnapchotArg) => {
-    const arr = Array.isArray(snap) ? snap : [snap];
-    return arr.map((doc) => {
+export type DocType = { id: string, data: DocumentData | undefined }
+
+type QuerySnapchotArray = QueryDocumentSnapshot<DocumentData, DocumentData>[]
+export const extractArrayFromQuerySnapchot = (snap: QuerySnapchotArray): DocType[] => {
+    return snap.map((doc) => {
         return { id: doc.id, data: doc.data() };
     });
+};
+
+type QuerySnapchotDoc = DocumentSnapshot<DocumentData, DocumentData>
+export const extractDocFromQuerySnapchot = (snap: QuerySnapchotDoc): DocType => {
+    return { id: snap.id, data: snap.data() };
 };
