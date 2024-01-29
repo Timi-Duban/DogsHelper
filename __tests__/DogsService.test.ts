@@ -1,22 +1,14 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { Firestore, collection, doc, getDocs, setDoc } from 'firebase/firestore';
-import { createDbDog, deleteDog, getDog, readDogs, updateDogName } from '../../src/dogs/DogsService';
-import { initializeSimilarEnv } from './__utils__/Helpers';
-
-const initialDog = { id: '1', name: "initial Dog" }
-const createInitialDog = async (firestore: Firestore) => {
-    await setDoc(doc(firestore, "groups/1/dogs", initialDog.id), { name: initialDog.name });
-}
-const getDbDogs = async (firestore: Firestore) => {
-    return (await getDocs(collection(firestore, "groups", "1", "dogs"))).docs;
-}
+import { Firestore } from 'firebase/firestore';
+import { createDbDog, deleteDog, getDog, readDogs, updateDogName } from '../src/dogs/DogsService';
+import { createInitialDog, getDbDogs, initialDog, initializeSimilarEnv } from './firestore/__utils__/Helpers';
 
 describe('Test dogs service', () => {
     let testEnv: RulesTestEnvironment;
     let firestore: Firestore;
 
     beforeAll(async () => {
-        testEnv = await initializeSimilarEnv();
+        testEnv = await initializeSimilarEnv('dogs');
     });
 
     beforeEach(async () => {
@@ -27,10 +19,9 @@ describe('Test dogs service', () => {
 
     it('Can CREATE dog.', async () => {
         const initialDogs = await getDbDogs(firestore);
-        const initialDogsLength = initialDogs.length;
         const newDog = await createDbDog('newDog', firestore);
         const finalDogs = await getDbDogs(firestore);
-        expect(initialDogsLength).toBeLessThan(finalDogs.length);
+        expect(initialDogs.length).toBeLessThan(finalDogs.length);
         expect(finalDogs.find(dog => dog.id === newDog.id)).toBeDefined;
     });
 

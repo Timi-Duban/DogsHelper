@@ -8,7 +8,7 @@ describe('Test root database access', () => {
     const consoleWarn = console.warn;
 
     beforeAll(async () => {
-        testEnv = await initializeSimilarEnv();
+        testEnv = await initializeSimilarEnv('security-rules');
     });
 
     beforeEach(async () => {
