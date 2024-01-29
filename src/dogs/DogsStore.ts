@@ -1,55 +1,48 @@
-import { createAtom, makeAutoObservable } from "mobx"
+import { Unsubscribe } from "firebase/firestore"
+import { action, makeAutoObservable, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
+import { DogType, createDbDog, getRtDogs } from "./DogsService"
 
 export class DogsStore {
-    atom
     dogs: Dog[] = []
+    private stopListening = () => { }
 
     constructor() {
-        this.atom = createAtom(
-            "DogsStore", // Atom's name, for debugging purposes.
-            // 2nd (optional) parameter:
-            // - Callback for when this atom transitions from unobserved to observed.
-            () => this.startListening(),
-            // 3rd (optional) parameter:
-            // - Callback for when this atom transitions from observed to unobserved.
-            () => this.stopListening()
-            // The same atom transitions between these two states multiple times.
-        )
+        makeObservable<this, "addDog" | "resetDogs" | "setStopListening" >(this, {
+            dogs: observable,
+            addDog: action,
+            setStopListening: action,
+            resetDogs: action,
+        })
+
+        onBecomeObserved(this, "dogs", this.startListening.bind(this))
+        onBecomeUnobserved(this, "dogs", () => this.stopListening())
     }
 
-    stopListening(): void {
-    }
-    startListening(): void {
-        this.dogs = [new Dog(this, '1', 'test intial dog name')]
-    }
-
-    getDogs() {
-        this.atom.reportObserved();
-        return this.dogs
-    }
-
-    // Fetches all Dogs from the server.
-    // loadDogs() {
-    // }
-
-    createDog(id: string, name: string) {
-        this.dogs.push(new Dog(this, id, name));
-        this.atom.reportChanged();
+    private startListening(): void {
+        const stop = getRtDogs((newDogs: DogType[]) => {
+            this.resetDogs();
+            newDogs.forEach(dog => {
+                this.addDog(new Dog(this, dog.id, dog.name));
+            })
+        })
+        this.setStopListening(stop);
     }
 
-    // Creates a fresh Dog on the client and the server.
-    // createDog(name: string) {
-    //     // Create dog on backend and retrieve Id
-    //     const id = 'GetId'
-    //     const dog = new Dog(this, id, name)
-    //     this.dogs.push(dog)
-    //     return dog
-    // }
+    private addDog(dog: Dog) {
+        this.dogs.push(dog);
+    }
 
-    // A Dog was somehow deleted, clean it from the client memory.
-    // removeDog(dog: Dog) {
-    //     this.dogs.splice(this.dogs.indexOf(dog), 1)
-    // }
+    private resetDogs() {
+        this.dogs = [];
+    }
+
+    private setStopListening(func: Unsubscribe) {
+        this.stopListening = func;
+    }
+
+    createDog(name: string) {
+        return createDbDog(name);
+    }
 }
 
 export class Dog {
@@ -67,21 +60,12 @@ export class Dog {
         this.name = name;
     }
 
-    // Remove this Dog from the client and the server.
-    delete() {
+    // delete() {
         // Remove from server using DogsService
-        // this.store.removeDog(this) // Useless since observer will return updated list?
-    }
+    // }
 
-    get asJson() {
-        return {
-            id: this.id,
-            name: this.name,
-        }
-    }
-
-    // Update this Dog with information from the server.
     // updateFromJson(json: any) {
-    //     this.name = json.name
+        // Update from server using DogsService
+        // this.name = json.name
     // }
 }

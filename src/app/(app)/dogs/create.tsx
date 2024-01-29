@@ -1,15 +1,17 @@
-import { createDog } from "@/dogs/DogsService";
+import globalStyles from "@/global/GlobalStyle";
 import Title from "@/global/components/Title";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
+import { DogsStoreContext } from "../_layout";
 
 const create = () => {
     const [name, setName] = useState('');
+    const dogsStore = useContext(DogsStoreContext);
 
     const onPress = async () => {
         try {
-            await createDog(name);
+            await dogsStore.createDog(name);
             router.canGoBack() ? router.back() : router.replace('/dogs');
         } catch (error: any) {
             Alert.alert('Error', error.message)
@@ -24,7 +26,7 @@ const create = () => {
                 value={name}
                 placeholder="Name"
                 autoCapitalize="words"
-                style={styles.input}
+                style={globalStyles.input}
             />
             <Button title="Create" onPress={onPress} disabled={name === ""} />
         </View>
@@ -35,10 +37,6 @@ const styles = StyleSheet.create({
     mainView: {
         paddingHorizontal: 10
     },
-    input: {
-        marginBottom: 10,
-        padding: 10,
-        backgroundColor: 'white'}
 })
 
 export default create;

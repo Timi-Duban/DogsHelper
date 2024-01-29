@@ -1,4 +1,4 @@
-import { DocumentData, Firestore, QuerySnapshot, addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, updateDoc } from "firebase/firestore";
+import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { DocType, extractArrayFromQuerySnapchot, extractDocFromQuerySnapchot } from "../FirestoreService";
 
@@ -10,7 +10,7 @@ const extractDogFromDoc = (doc: DocType): DogType => {
     return { id: doc.id, name: doc.data?.name }
 }
 
-export const createDog = async (name: string, testDb?: Firestore): Promise<DogType> => {
+export const createDbDog = async (name: string, testDb?: Firestore): Promise<DogType> => {
     if (name) {
         const docRef = await addDoc(collection(testDb ?? db, "groups/1/dogs"), { name });
         return { id: docRef.id, name };

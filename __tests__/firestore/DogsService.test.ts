@@ -1,6 +1,6 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore, collection, doc, getDocs, setDoc } from 'firebase/firestore';
-import { createDog, deleteDog, getDog, readDogs, updateDogName } from '../../src/dogs/DogsService';
+import { createDbDog, deleteDog, getDog, readDogs, updateDogName } from '../../src/dogs/DogsService';
 import { initializeSimilarEnv } from './__utils__/Helpers';
 
 const initialDog = { id: '1', name: "initial Dog" }
@@ -28,7 +28,7 @@ describe('Test dogs service', () => {
     it('Can CREATE dog.', async () => {
         const initialDogs = await getDbDogs(firestore);
         const initialDogsLength = initialDogs.length;
-        const newDog = await createDog('newDog', firestore);
+        const newDog = await createDbDog('newDog', firestore);
         const finalDogs = await getDbDogs(firestore);
         expect(initialDogsLength).toBeLessThan(finalDogs.length);
         expect(finalDogs.find(dog => dog.id === newDog.id)).toBeDefined;

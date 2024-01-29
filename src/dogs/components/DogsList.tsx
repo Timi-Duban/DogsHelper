@@ -15,9 +15,11 @@ const DogComponent = (props: { name: string }) => {
 
 const DogsList = observer(() => {
     const dogsStore = useContext(DogsStoreContext);
+    let dogs = dogsStore.dogs;
+
     return (
         <View style={styles.grid}>
-            {dogsStore.getDogs().map(dog => <DogComponent name={dog.name} key={dog.id} />)}
+            {dogs.map(dog => <DogComponent name={dog.name} key={dog.id} />)}
         </View>
     )
 });
