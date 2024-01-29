@@ -1,13 +1,25 @@
 import { DogsStoreContext } from "@/app/(app)/_layout";
+import Link from "@/global/components/Link";
 import { theme } from "@/global/theme";
 import { observer } from "mobx-react-lite";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { Dog } from "../DogsStore";
 
-const DogComponent = (props: { name: string }) => {
+const DogComponent = (props: { dog: Dog }) => {
+    const dog = props.dog;
     return (
         <View style={styles.dogView}>
-            <Text style={styles.dogText}>{props.name}</Text>
+            <Link
+                href={{
+                    pathname: "/dogs/[dogId]",
+                    params: { dogId: dog.id },
+                }}
+                asChild
+                customStyle={{}}
+            >
+                <Text style={styles.dogText}>{dog.name}</Text>
+            </Link>
         </View>
     );
 }
@@ -19,7 +31,7 @@ const DogsList = observer(() => {
 
     return (
         <View style={styles.grid}>
-            {dogs.map(dog => <DogComponent name={dog.name} key={dog.id} />)}
+            {dogs.map(dog => <DogComponent dog={dog} key={dog.id} />)}
         </View>
     )
 });

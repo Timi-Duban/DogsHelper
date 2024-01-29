@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 import { DogsStoreContext } from "../_layout";
 
-const create = () => {
+const CreateDog = () => {
     const [name, setName] = useState('');
     const dogsStore = useContext(DogsStoreContext);
 
@@ -26,7 +26,7 @@ const create = () => {
                 value={name}
                 placeholder="Name"
                 autoCapitalize="words"
-                style={globalStyles.input}
+                style={{...globalStyles.input, marginBottom: 10}}
             />
             <Button title="Create" onPress={onPress} disabled={name === ""} />
         </View>
@@ -39,4 +39,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default create;
+export default CreateDog;

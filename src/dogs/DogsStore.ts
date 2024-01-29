@@ -1,6 +1,6 @@
 import { Unsubscribe } from "firebase/firestore"
 import { action, makeAutoObservable, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
-import { DogType, createDbDog, getRtDogs } from "./DogsService"
+import { DogType, createDbDog, deleteDog, getRtDogs, updateDogName } from "./DogsService"
 
 export class DogsStore {
     dogs: Dog[] = []
@@ -60,12 +60,15 @@ export class Dog {
         this.name = name;
     }
 
-    // delete() {
-        // Remove from server using DogsService
-    // }
+    async delete() {
+        return await deleteDog(this.id);
+    }
 
-    // updateFromJson(json: any) {
-        // Update from server using DogsService
-        // this.name = json.name
-    // }
+    async updateName(input: string) {
+        const name = input.trim();
+        if (!name) {
+            throw new Error('Dog\'s name cannot be empty');
+        }
+        return await updateDogName(this.id, name);
+    }
 }

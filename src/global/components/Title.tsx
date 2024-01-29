@@ -2,7 +2,7 @@ import { StyleSheet, Text } from "react-native";
 import { theme } from "../theme";
 
 type TitleProps = {
-    children: string;
+    children: string | string[];
 }
 
 const Title = (props: TitleProps) => {

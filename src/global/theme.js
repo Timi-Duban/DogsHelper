@@ -10,5 +10,6 @@ export const theme = {
     error: '#f13a59',
     surface: '#dedede',
     white: 'white',
+    danger: '#D11A2A',
   },
 }

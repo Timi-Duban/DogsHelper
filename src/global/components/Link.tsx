@@ -1,18 +1,22 @@
 import { Link as ExpoLink } from "expo-router";
-import { StyleSheet } from "react-native";
+import { ReactNode } from "react";
+import { StyleProp, StyleSheet, TextStyle } from "react-native";
 import { theme } from "../theme";
 
 type LinkProps = {
-    href: string;
-    children: string;
+    href: string | object;
+    children: string | ReactNode;
+    asChild?: boolean;
+    customStyle?: StyleProp<TextStyle>;
 }
 
 const Link = (props: LinkProps) => {
-    const { href, children } = props;
+    const { asChild, children, customStyle, href } = props;
     return (
         <ExpoLink
             href={href}
-            style={styles.linkStyle}
+            style={customStyle ?? styles.linkStyle}
+            asChild={asChild}
         >
             {children}
         </ExpoLink>
