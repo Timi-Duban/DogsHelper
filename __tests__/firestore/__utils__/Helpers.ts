@@ -1,6 +1,7 @@
 import { RulesTestContext, RulesTestEnvironment, initializeTestEnvironment } from '@firebase/rules-unit-testing';
-import { Firestore, collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import { Firestore, Timestamp, collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import fs from "fs";
+import { TourType } from '../../../src/tours/ToursService';
 
 // ------------------------- Groups initialization -------------------------
 export const initialGroup = { id: '1', data: { name: "default" } };
@@ -30,12 +31,12 @@ export const getDbDogs = async (firestore: Firestore) => {
 };
 
 // ------------------------- Tours initialization -------------------------
-export const initialTour = { id: '1', length: 25, position: "head" };
+const ts = Timestamp.fromMillis(1700000000000);
+export const initialTour: TourType = { id: '1', length: 25, position: "head", ts, dogId: initialDog.id };
+let {id, ...initialTourData} = initialTour;
 export const createInitialTour = async (firestore: Firestore) => {
     await setDoc(
-        doc(firestore, "groups", initialGroup.id, "dogs", initialDog.id, "tours", initialTour.id),
-        { length: initialTour.length, position: initialTour.position }
-    );
+        doc(firestore, "groups", initialGroup.id, "dogs", initialDog.id, "tours", initialTour.id),initialTourData);
 };
 export const getDbTours = async (firestore: Firestore) => {
     return (await getDocs(collection(firestore, "groups", initialGroup.id, "dogs", initialDog.id, "tours"))).docs;
