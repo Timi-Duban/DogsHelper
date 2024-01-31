@@ -1,13 +1,14 @@
 import globalStyles from "@/global/GlobalStyle";
 import Title from "@/global/components/Title";
 import { theme } from "@/global/theme";
+import TourList from "@/tours/components/TourList";
 import { router, useLocalSearchParams } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { DogsStoreContext } from "../_layout";
 
 const DogProfile = () => {
-    const { dogId } = useLocalSearchParams();
+    const { dogId } = useLocalSearchParams() as {dogId: string};
     const dogsStore = useContext(DogsStoreContext);
     const dog = dogsStore.dogs.find(e => e.id === dogId)
 

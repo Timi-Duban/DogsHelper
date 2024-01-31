@@ -2,6 +2,7 @@ import { RulesTestContext, RulesTestEnvironment, initializeTestEnvironment } fro
 import { Firestore, Timestamp, collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import fs from "fs";
 import { TourType } from '../../../src/tours/ToursService';
+import { getTodayDate } from '../../../src/FirestoreService';
 
 // ------------------------- Groups initialization -------------------------
 export const initialGroup = { id: '1', data: { name: "default" } };
@@ -31,7 +32,7 @@ export const getDbDogs = async (firestore: Firestore) => {
 };
 
 // ------------------------- Tours initialization -------------------------
-const ts = Timestamp.fromMillis(1700000000000);
+const ts = Timestamp.fromDate(getTodayDate());
 export const initialTour: TourType = { id: '1', length: 25, position: "head", ts, dogId: initialDog.id };
 let {id, ...initialTourData} = initialTour;
 export const createInitialTour = async (firestore: Firestore) => {

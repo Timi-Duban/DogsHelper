@@ -1,9 +1,10 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore, Timestamp } from 'firebase/firestore';
-import { TourType, createDbTour, deleteTour, updateTour } from '../src/tours/ToursService';
+import { TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId, updateTour } from '../src/tours/ToursService';
 import { createInitialTour, getDbTours, initialDog, initialTour, initializeSimilarEnv } from './firestore/__utils__/Helpers';
 
 const dogId = initialDog.id;
+const newTs = Timestamp.fromMillis(1600000000000);
 
 describe('Test tours service', () => {
     let testEnv: RulesTestEnvironment;
@@ -20,17 +21,45 @@ describe('Test tours service', () => {
     });
 
     it('Can CREATE tour.', async () => {
-        const ts = Timestamp.fromMillis(1600000000000);
         const initialTours = await getDbTours(firestore);
-        const newTour = await createDbTour(dogId, 10, "back", ts, firestore);
+        const newTour = await createDbTour(dogId, 10, "back", newTs, firestore);
         const finalTours = await getDbTours(firestore);
         expect(initialTours.length).toBeLessThan(finalTours.length);
         expect(finalTours.find(tour => tour.id === newTour.id)).toBeDefined;
     });
 
+    it('Can READ 15 days real-time tour list.', async () => {
+        let callbackRun = false;
+        const callback = (tours: TourType[]) => {
+            expect(tours).toBeDefined();
+            expect(tours.length).toEqual(1);
+            expect(tours[0].id).toEqual(initialTour.id);
+            callbackRun = true;
+        }
+        const stopListenning = readRt15DaysTours(callback, firestore);
+        // Await some time for the callback to be called at first read
+        await new Promise(r => setTimeout(r, 50));
+        stopListenning();
+        expect(callbackRun).toBe(true);
+    });
+
+    it('Can READ real-time tour list of a dog.', async () => {
+        let callbackRun = false;
+        const callback = (tours: TourType[]) => {
+            expect(tours).toBeDefined();
+            expect(tours.length).toEqual(1);
+            expect(tours[0].id).toEqual(initialTour.id);
+            callbackRun = true;
+        }
+        const stopListenning = readRtToursByDogId(dogId, callback, firestore);
+        // Await some time for the callback to be called at first read
+        await new Promise(r => setTimeout(r, 50));
+        stopListenning();
+        expect(callbackRun).toBe(true);
+    });
+
     it('Can UPDATE tour.', async () => {
-        const ts = Timestamp.fromMillis(1600000000000);
-        const newTour: TourType = { ...initialTour, length: 100, position: 'normal', ts };
+        const newTour: TourType = { ...initialTour, length: 100, position: 'normal', ts: newTs };
         await updateTour(dogId, newTour, firestore);
         const tour = (await getDbTours(firestore)).find(doc => doc.id === initialTour.id);
         expect(tour).toBeDefined();

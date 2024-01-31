@@ -26,8 +26,8 @@ export const readDogs = async (testDb?: Firestore) => {
     return dogs;
 };
 
-export type GetRtDogsCallbackType = (dogs: DogType[]) => void
-export const getRtDogs = (callback: GetRtDogsCallbackType, testDb?: Firestore) => {
+export type ReadRtDogsCallbackType = (dogs: DogType[]) => void
+export const readRtDogs = (callback: ReadRtDogsCallbackType, testDb?: Firestore) => {
     const unsubscribe = onSnapshot(dogsCollection(testDb), (snap) => {
         const docs = extractArrayFromQuerySnapchot(snap.docs);
         const dogs = docs.map(doc => extractDogFromDoc(doc));
@@ -36,14 +36,14 @@ export const getRtDogs = (callback: GetRtDogsCallbackType, testDb?: Firestore) =
     return unsubscribe;
 };
 
-export const getDog = async (id: string, testDb?: Firestore) => {
+export const readDog = async (id: string, testDb?: Firestore) => {
     const snap = await getDoc(doc(defGroup(testDb), "dogs", id));
     const document = extractDocFromQuerySnapchot(snap);
     return extractDogFromDoc(document);
 };
 
-export type GetRtDogCallbackType = (dog: DogType) => void
-export const getRtDog = (callback: GetRtDogCallbackType, id: string, testDb?: Firestore) => {
+export type ReadRtDogCallbackType = (dog: DogType) => void
+export const readRtDog = (callback: ReadRtDogCallbackType, id: string, testDb?: Firestore) => {
     const unsubscribe = onSnapshot(doc(defGroup(testDb), "dogs", id), (snap) => {
         const document = extractDocFromQuerySnapchot(snap);
         const dog = extractDogFromDoc(document);

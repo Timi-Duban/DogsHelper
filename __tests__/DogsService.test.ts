@@ -1,6 +1,6 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore } from 'firebase/firestore';
-import { createDbDog, deleteDog, getDog, readDogs, updateDogName } from '../src/dogs/DogsService';
+import { DogType, createDbDog, deleteDog, readDog, readDogs, readRtDog, readRtDogs, updateDogName } from '../src/dogs/DogsService';
 import { createInitialDog, getDbDogs, initialDog, initializeSimilarEnv } from './firestore/__utils__/Helpers';
 
 describe('Test dogs service', () => {
@@ -33,11 +33,42 @@ describe('Test dogs service', () => {
         expect(dogs[0].id).toEqual(initialDog.id);
     });
 
+    it('Can READ dog list real-time.', async () => {
+        let callbackRun = false;
+        const callback = (dogs: DogType[]) => {
+            expect(dogs).toBeDefined();
+            expect(dogs.length).toEqual(1);
+            expect(dogs[0].name).toEqual(initialDog.name);
+            expect(dogs[0].id).toEqual(initialDog.id);
+            callbackRun = true;
+        }
+        const stopListenning = readRtDogs(callback, firestore);
+        // Await some time for the callback to be called at first read
+        await new Promise(r => setTimeout(r, 50));
+        stopListenning();
+        expect(callbackRun).toBe(true);
+    });
+
     it('Can READ specific dog.', async () => {
-        const dog = await getDog(initialDog.id, firestore);
+        const dog = await readDog(initialDog.id, firestore);
         expect(dog).toBeDefined();
         expect(dog.id).toEqual(initialDog.id);
         expect(dog.name).toEqual(initialDog.name);
+    });
+
+    it('Can READ specific dog real-time.', async () => {
+        let callbackRun = false;
+        const callback = (dog: DogType) => {
+            expect(dog).toBeDefined();
+            expect(dog?.id).toEqual(initialDog.id);
+            expect(dog?.name).toEqual(initialDog.name);
+            callbackRun = true;
+        }
+        const stopListenning = readRtDog(callback, initialDog.id, firestore);
+        // Await some time for the callback to be called at first read
+        await new Promise(r => setTimeout(r, 50));
+        stopListenning();
+        expect(callbackRun).toBe(true);
     });
 
     it('Can UPDATE dog.', async () => {

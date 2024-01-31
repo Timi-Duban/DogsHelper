@@ -6,6 +6,12 @@ export const getTodayDate = () => {
     return date;
 };
 
+export const getXDaysAgo = (x: number) => {
+    var date = getTodayDate();
+    date.setDate(date.getDate() - x);
+    return date;
+}
+
 export type DocType = { id: string, data: DocumentData | undefined }
 
 type QuerySnapchotArray = QueryDocumentSnapshot<DocumentData, DocumentData>[]

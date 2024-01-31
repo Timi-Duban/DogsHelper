@@ -1,6 +1,6 @@
 import { Unsubscribe } from "firebase/firestore"
 import { action, makeAutoObservable, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
-import { DogType, createDbDog, deleteDog, getRtDogs, updateDogName } from "./DogsService"
+import { DogType, createDbDog, deleteDog, readRtDogs, updateDogName } from "./DogsService"
 
 export class DogsStore {
     dogs: Dog[] = []
@@ -19,7 +19,7 @@ export class DogsStore {
     }
 
     private startListening(): void {
-        const stop = getRtDogs((newDogs: DogType[]) => {
+        const stop = readRtDogs((newDogs: DogType[]) => {
             this.resetDogs();
             newDogs.forEach(dog => {
                 this.addDog(new Dog(this, dog.id, dog.name));
@@ -61,6 +61,7 @@ export class Dog {
     }
 
     async delete() {
+        // TODO: delete its tours as well
         return await deleteDog(this.id);
     }
 
