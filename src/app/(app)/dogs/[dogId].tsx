@@ -56,6 +56,7 @@ const DogProfile = () => {
             <View style={styles.deleteButton}>
                 <Button title="Delete dog" color={theme.colors.danger} onPress={onDelete} />
             </View>
+            <TourList dogId={dogId} />
         </View>
     )
 };
