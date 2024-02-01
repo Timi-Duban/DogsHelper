@@ -16,11 +16,10 @@ export class ToursStore {
      * @param target either the specific dogId or null. 
      */
     constructor(target: string | null) {
-        makeObservable<this, "addTour" | "resetTours" | "setStopListening">(this, {
+        makeObservable<this, "setTours" | "setStopListening">(this, {
             tours: observable,
-            addTour: action,
+            setTours: action,
             setStopListening: action,
-            resetTours: action,
         })
 
         onBecomeObserved(this, "tours", this.startListening.bind(this, target))
@@ -28,11 +27,11 @@ export class ToursStore {
     }
 
     private startListening(target: string | null): void {
-        const callback = (newTours: TourType[]) => {
-            this.resetTours();
-            newTours.forEach(tour => {
-                this.addTour(new Tour(this, tour.id, tour.length, tour.position, tour.ts, tour.dogId));
-            })
+        const callback = (newDbTours: TourType[]) => {
+            const newTours = newDbTours.map(tour => {
+                return new Tour(this, tour.id, tour.length, tour.position, tour.ts, tour.dogId);
+            });
+            this.setTours(newTours);
         }
 
         let stop: Unsubscribe
@@ -44,12 +43,8 @@ export class ToursStore {
         this.setStopListening(stop);
     }
 
-    private addTour(tour: Tour) {
-        this.tours.push(tour);
-    }
-
-    private resetTours() {
-        this.tours = [];
+    private setTours(tours: Tour[]) {
+        this.tours = tours;
     }
 
     private setStopListening(func: Unsubscribe) {

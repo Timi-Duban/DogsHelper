@@ -1,12 +1,18 @@
 import { DogsStore } from '@/dogs/DogsStore';
+import { PopulatedDogsStore } from '@/dogs/PopulatedDogsStore';
 import { theme } from '@/global/theme';
+import { ToursStore } from '@/tours/ToursStore';
 import { Stack, router } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from 'firebaseConfig';
 import React, { createContext, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-export const DogsStoreContext = createContext<DogsStore>(new DogsStore());
+const dogsStore = new DogsStore();
+const toursStore = new ToursStore(null);
+export const DogsStoreContext = createContext<DogsStore>(dogsStore);
+export const ToursStoreContext = createContext<ToursStore>(toursStore);
+export const PopulatedDogsStoreContext = createContext<PopulatedDogsStore>(new PopulatedDogsStore(dogsStore, toursStore));
 
 export default function AppLayout() {
     useEffect(() => {

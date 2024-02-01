@@ -7,11 +7,10 @@ export class DogsStore {
     private stopListening = () => { }
 
     constructor() {
-        makeObservable<this, "addDog" | "resetDogs" | "setStopListening" >(this, {
+        makeObservable<this, "setDogs" | "setStopListening" >(this, {
             dogs: observable,
-            addDog: action,
+            setDogs: action,
             setStopListening: action,
-            resetDogs: action,
         })
 
         onBecomeObserved(this, "dogs", this.startListening.bind(this))
@@ -19,21 +18,17 @@ export class DogsStore {
     }
 
     private startListening(): void {
-        const stop = readRtDogs((newDogs: DogType[]) => {
-            this.resetDogs();
-            newDogs.forEach(dog => {
-                this.addDog(new Dog(this, dog.id, dog.name));
-            })
+        const stop = readRtDogs((newDbDogs: DogType[]) => {
+            const newDogs = newDbDogs.map(dog => {
+                return new Dog(this, dog.id, dog.name);
+            });
+            this.setDogs(newDogs);
         })
         this.setStopListening(stop);
     }
 
-    private addDog(dog: Dog) {
-        this.dogs.push(dog);
-    }
-
-    private resetDogs() {
-        this.dogs = [];
+    private setDogs(dogs: Dog[]) {
+        this.dogs = dogs;
     }
 
     private setStopListening(func: Unsubscribe) {
