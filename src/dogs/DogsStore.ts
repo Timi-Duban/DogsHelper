@@ -1,6 +1,7 @@
 import { Unsubscribe } from "firebase/firestore"
 import { action, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
 import { DogType, createDbDog, deleteDog, readRtDogs, updateDogName } from "./DogsService"
+import { deleteTour, readToursByDogId } from "@/tours/ToursService"
 
 export class DogsStore {
     dogs: Dog[] = []
@@ -55,8 +56,14 @@ export class Dog {
         this.name = name;
     }
 
+    /**
+     * Delete a dog and all its tours from DB
+     */
     async delete() {
-        // TODO: delete its tours as well
+        const tours = await readToursByDogId(this.id);
+        tours.forEach(tour => {
+            deleteTour(this.id, tour.id);
+        })
         return await deleteDog(this.id);
     }
 
