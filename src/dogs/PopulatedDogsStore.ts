@@ -1,5 +1,5 @@
 import { Tour, ToursStore } from "@/tours/ToursStore";
-import { computed, makeAutoObservable, makeObservable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import { Dog, DogsStore } from "./DogsStore";
 
 export class PopulatedDogsStore {
@@ -16,29 +16,23 @@ export class PopulatedDogsStore {
 
 
     get popDogs() {
-        let dogs: PopulatedDog[] = this.dogsStore.dogs.map(dog => ({...dog, tours: []}));
+        let dogs: PopulatedDog[] = this.dogsStore.dogs.map(dog => new PopulatedDog(dog, []));
         this.toursStore.tours.forEach(tour => {
             const dog = dogs.find(d => d.id === tour.dogId);
-            dog?.tours?.push(tour);
+            dog?.tours.push(tour);
         })
         return dogs;
     }
 }
 
-export class PopulatedDog {
-    id: string;
-    name: string;
-    store: DogsStore;
+export class PopulatedDog extends Dog {
     tours: Tour[];
 
     constructor(dog: Dog, tours: Tour[]) {
-        makeAutoObservable(this, {
-            id: false,
-            store: false,
+        super(dog.store, dog.id, dog.name);
+        makeObservable(this, {
+            tours: observable,
         })
-        this.store = dog.store;
-        this.id = dog.id;
-        this.name = dog.name;
         this.tours = tours;
     }
 }

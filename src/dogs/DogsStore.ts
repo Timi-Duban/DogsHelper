@@ -1,5 +1,5 @@
 import { Unsubscribe } from "firebase/firestore"
-import { action, makeAutoObservable, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
+import { action, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
 import { DogType, createDbDog, deleteDog, readRtDogs, updateDogName } from "./DogsService"
 
 export class DogsStore {
@@ -46,9 +46,9 @@ export class Dog {
     store: DogsStore;
 
     constructor(store: DogsStore, id: string, name: string) {
-        makeAutoObservable(this, {
-            id: false,
-            store: false,
+        makeObservable(this, {
+            name: observable,
+            updateName: action,
         })
         this.store = store;
         this.id = id;
