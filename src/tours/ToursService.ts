@@ -1,4 +1,4 @@
-import { Firestore, Timestamp, addDoc, collection, collectionGroup, deleteDoc, doc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
+import { Firestore, Timestamp, addDoc, collection, collectionGroup, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { DocType, extractArrayFromQuerySnapchot, getXDaysAgo } from "../FirestoreService";
 
@@ -25,6 +25,13 @@ export const createDbTour = async (dogId: string, length: number, position: Posi
     } else {
         throw new Error('Cannot create a tour with an empty dogId or length: ' + JSON.stringify({ dogId, length }))
     }
+};
+
+export const readToursByDogId = async (dogId: string, testDb?: Firestore) => {
+    const snap = await getDocs(getToursCollection(testDb, dogId));
+    const docs = extractArrayFromQuerySnapchot(snap.docs);
+    const tours = docs.map(doc => extractTourFromDoc(doc));
+    return tours;
 };
 
 const get15DaysToursQuery = (testDb?: Firestore) => {

@@ -1,6 +1,6 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore, Timestamp } from 'firebase/firestore';
-import { TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId, updateTour } from '../src/tours/ToursService';
+import { TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId, readToursByDogId, updateTour } from '../src/tours/ToursService';
 import { createInitialTour, getDbTours, initialDog, initialTour, initializeSimilarEnv } from './firestore/__utils__/Helpers';
 
 const dogId = initialDog.id;
@@ -26,6 +26,13 @@ describe('Test tours service', () => {
         const finalTours = await getDbTours(firestore);
         expect(initialTours.length).toBeLessThan(finalTours.length);
         expect(finalTours.find(tour => tour.id === newTour.id)).toBeDefined;
+    });
+
+    it('Can READ tour list.', async () => {
+        const tours = await readToursByDogId(dogId, firestore);
+        expect(tours).toBeDefined();
+        expect(tours.length).toEqual(1);
+        expect(tours[0].id).toEqual(initialTour.id);
     });
 
     it('Can READ 15 days real-time tour list.', async () => {
