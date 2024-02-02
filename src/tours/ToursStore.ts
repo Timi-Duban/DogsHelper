@@ -1,6 +1,6 @@
 import { Timestamp, Unsubscribe } from "firebase/firestore"
 import { action, makeAutoObservable, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
-import { Position, TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId } from "./ToursService"
+import { Position, TourData, TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId } from "./ToursService"
 
 /**
  * A Store that contains a tour list.
@@ -29,7 +29,7 @@ export class ToursStore {
     private startListening(target: string | null): void {
         const callback = (newDbTours: TourType[]) => {
             const newTours = newDbTours.map(tour => {
-                return new Tour(this, tour.id, tour.length, tour.position, tour.ts, tour.dogId);
+                return new Tour(this, tour);
             });
             this.setTours(newTours);
         }
@@ -51,8 +51,9 @@ export class ToursStore {
         this.stopListening = func;
     }
 
-    createTour(dogId: string, length: number, position: Position, ts: Timestamp) {
-        return createDbTour(dogId, length, position, ts);
+    createTour(newTour: TourData & { id?: string }) {
+        let { id, ...safeNewTour } = newTour;
+        return createDbTour(safeNewTour);
     }
 }
 
@@ -64,18 +65,18 @@ export class Tour {
     dogId: string;
     store: ToursStore;
 
-    constructor(store: ToursStore, id: string, length: number, position: Position, ts: Timestamp, dogId: string) {
+    constructor(store: ToursStore, tour: TourType) {
         makeAutoObservable(this, {
             id: false,
             store: false,
             dogId: false,
         })
         this.store = store;
-        this.id = id;
-        this.length = length;
-        this.position = position;
-        this.ts = ts;
-        this.dogId = dogId;
+        this.id = tour.id;
+        this.length = tour.length;
+        this.position = tour.position;
+        this.ts = tour.ts;
+        this.dogId = tour.dogId;
     }
 
     async delete() {

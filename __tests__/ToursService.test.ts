@@ -21,8 +21,9 @@ describe('Test tours service', () => {
     });
 
     it('Can CREATE tour.', async () => {
+        const { id, ...tourData } = initialTour;
         const initialTours = await getDbTours(firestore);
-        const newTour = await createDbTour(dogId, 10, "back", newTs, firestore);
+        const newTour = await createDbTour(tourData, firestore);
         const finalTours = await getDbTours(firestore);
         expect(initialTours.length).toBeLessThan(finalTours.length);
         expect(finalTours.find(tour => tour.id === newTour.id)).toBeDefined;
@@ -66,14 +67,14 @@ describe('Test tours service', () => {
     });
 
     it('Can UPDATE tour.', async () => {
-        const newTour: TourType = { ...initialTour, length: 100, position: 'normal', ts: newTs };
-        await updateTour(dogId, newTour, firestore);
+        const newTour: TourType = { ...initialTour, length: 100, ts: newTs };
+        await updateTour(dogId, initialTour.id, newTour, firestore);
         const tour = (await getDbTours(firestore)).find(doc => doc.id === initialTour.id);
         expect(tour).toBeDefined();
         expect(tour!.id).toEqual(initialTour.id);
         expect(tour!.data().length).toEqual(newTour.length);
-        expect(tour!.data().position).toEqual(newTour.position);
         expect(tour!.data().ts).toEqual(newTour.ts);
+        expect(tour!.data().position).toEqual(initialTour.position);
     });
 
     it('Can DELETE tour.', async () => {

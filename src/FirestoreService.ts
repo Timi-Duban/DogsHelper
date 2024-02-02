@@ -25,3 +25,7 @@ type QuerySnapchotDoc = DocumentSnapshot<DocumentData, DocumentData>
 export const extractDocFromQuerySnapchot = (snap: QuerySnapchotDoc): DocType => {
     return { id: snap.id, data: snap.data() };
 };
+
+export function extractFromDoc<Type>(doc: DocType){
+    return {id: doc.id, ...doc.data} as Type
+}

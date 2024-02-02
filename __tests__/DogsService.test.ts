@@ -1,7 +1,9 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore } from 'firebase/firestore';
-import { DogType, createDbDog, deleteDog, readDog, readDogs, readRtDog, readRtDogs, updateDogName } from '../src/dogs/DogsService';
+import { DogData, DogType, createDbDog, deleteDog, readDog, readDogs, readRtDog, readRtDogs, updateDog } from '../src/dogs/DogsService';
 import { createInitialDog, getDbDogs, initialDog, initializeSimilarEnv } from './firestore/__utils__/Helpers';
+
+const newDogData: DogData = {name: 'New Dog', gender: 'female', heat: true, notes: 'new notes', temporaryNotes: 'temp notes'}
 
 describe('Test dogs service', () => {
     let testEnv: RulesTestEnvironment;
@@ -19,7 +21,7 @@ describe('Test dogs service', () => {
 
     it('Can CREATE dog.', async () => {
         const initialDogs = await getDbDogs(firestore);
-        const newDog = await createDbDog('newDog', firestore);
+        const newDog = await createDbDog(newDogData, firestore);
         const finalDogs = await getDbDogs(firestore);
         expect(initialDogs.length).toBeLessThan(finalDogs.length);
         expect(finalDogs.find(dog => dog.id === newDog.id)).toBeDefined;
@@ -72,11 +74,11 @@ describe('Test dogs service', () => {
     });
 
     it('Can UPDATE dog.', async () => {
-        await updateDogName(initialDog.id, 'updatedName', firestore);
+        await updateDog(initialDog.id, {...newDogData, id: 'new id'}, firestore);
         const dog = (await getDbDogs(firestore)).find(doc => doc.id === initialDog.id);
         expect(dog).toBeDefined();
         expect(dog!.id).toEqual(initialDog.id);
-        expect(dog!.data().name).toEqual('updatedName');
+        expect(dog!.data().name).toEqual(newDogData.name);
     });
 
     it('Can DELETE dog.', async () => {

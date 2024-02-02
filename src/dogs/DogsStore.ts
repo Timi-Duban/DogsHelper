@@ -1,14 +1,14 @@
+import { deleteTour, readToursByDogId } from "@/tours/ToursService"
 import { Unsubscribe } from "firebase/firestore"
 import { action, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
-import { DogType, createDbDog, deleteDog, readRtDogs, updateDogName } from "./DogsService"
-import { deleteTour, readToursByDogId } from "@/tours/ToursService"
+import { DogData, DogType, Gender, createDbDog, deleteDog, readRtDogs, updateDog } from "./DogsService"
 
 export class DogsStore {
     dogs: Dog[] = []
     private stopListening = () => { }
 
     constructor() {
-        makeObservable<this, "setDogs" | "setStopListening" >(this, {
+        makeObservable<this, "setDogs" | "setStopListening">(this, {
             dogs: observable,
             setDogs: action,
             setStopListening: action,
@@ -21,7 +21,7 @@ export class DogsStore {
     private startListening(): void {
         const stop = readRtDogs((newDbDogs: DogType[]) => {
             const newDogs = newDbDogs.map(dog => {
-                return new Dog(this, dog.id, dog.name);
+                return new Dog(this, dog);
             });
             this.setDogs(newDogs);
         })
@@ -36,24 +36,37 @@ export class DogsStore {
         this.stopListening = func;
     }
 
-    createDog(name: string) {
-        return createDbDog(name);
+    createDog(newDog: DogData & { id?: string }) {
+        let { id, ...safeNewDog } = newDog;
+        return createDbDog(safeNewDog);
     }
 }
 
 export class Dog {
-    id: string; // Unique id of this Dog, immutable.
-    name: string;
+    id: string;
     store: DogsStore;
+    name: string;
+    gender: Gender;
+    notes: string;
+    temporaryNotes: string;
+    heat: boolean;
 
-    constructor(store: DogsStore, id: string, name: string) {
+    constructor(store: DogsStore, dog: DogType) {
         makeObservable(this, {
             name: observable,
-            updateName: action,
+            gender: observable,
+            notes: observable,
+            temporaryNotes: observable,
+            heat: observable,
+            update: action,
         })
         this.store = store;
-        this.id = id;
-        this.name = name;
+        this.id = dog.id;
+        this.name = dog.name;
+        this.gender = dog.gender;
+        this.notes = dog.notes;
+        this.temporaryNotes = dog.temporaryNotes;
+        this.heat = dog.heat;
     }
 
     /**
@@ -67,11 +80,10 @@ export class Dog {
         return await deleteDog(this.id);
     }
 
-    async updateName(input: string) {
-        const name = input.trim();
-        if (!name) {
-            throw new Error('Dog\'s name cannot be empty');
+    async update(newDog: Partial<DogType>) {
+        if (newDog.name) {
+            newDog.name = newDog.name?.trim();
         }
-        return await updateDogName(this.id, name);
+        return await updateDog(this.id, newDog);
     }
 }

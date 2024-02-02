@@ -3,6 +3,7 @@ import { Firestore, Timestamp, collection, doc, getDocs, setDoc } from 'firebase
 import fs from "fs";
 import { TourType } from '../../../src/tours/ToursService';
 import { getTodayDate } from '../../../src/FirestoreService';
+import { DogData, DogType } from '@/dogs/DogsService';
 
 // ------------------------- Groups initialization -------------------------
 export const initialGroup = { id: '1', data: { name: "default" } };
@@ -23,9 +24,10 @@ export const createInitialDoc = async (testEnv: RulesTestEnvironment) => {
 };
 
 // ------------------------- Dogs initialization -------------------------
-export const initialDog = { id: '1', name: "initial Dog" };
+export const initialDogData: DogData = { name: 'Initial Dog', gender: 'male', heat: false, notes: '', temporaryNotes: '' };
+export const initialDog: DogType = { id: '1', ...initialDogData};
 export const createInitialDog = async (firestore: Firestore) => {
-    await setDoc(doc(firestore, "groups", initialGroup.id, "dogs", initialDog.id), { name: initialDog.name });
+    await setDoc(doc(firestore, "groups", initialGroup.id, "dogs", initialDog.id), initialDogData);
 };
 export const getDbDogs = async (firestore: Firestore) => {
     return (await getDocs(collection(firestore, "groups", initialGroup.id, "dogs"))).docs;
@@ -33,7 +35,7 @@ export const getDbDogs = async (firestore: Firestore) => {
 
 // ------------------------- Tours initialization -------------------------
 const ts = Timestamp.fromDate(getTodayDate());
-export const initialTour: TourType = { id: '1', length: 25, position: "head", ts, dogId: initialDog.id };
+export const initialTour: TourType = { id: '1', length: 25, position: "lead", ts, dogId: initialDog.id };
 let {id, ...initialTourData} = initialTour;
 export const createInitialTour = async (firestore: Firestore) => {
     await setDoc(

@@ -44,9 +44,5 @@ export default function AppLayout() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        margin: 10,
-        padding: 10,
-        backgroundColor: theme.colors.surface,
-        borderRadius: 16,
     }
 })

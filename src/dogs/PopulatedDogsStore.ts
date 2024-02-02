@@ -29,7 +29,7 @@ export class PopulatedDog extends Dog {
     tours: Tour[];
 
     constructor(dog: Dog, tours: Tour[]) {
-        super(dog.store, dog.id, dog.name);
+        super(dog.store, dog);
         makeObservable(this, {
             tours: observable,
         })

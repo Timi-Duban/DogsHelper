@@ -11,10 +11,12 @@ type TourListProps = {
 const TourList = observer((props: TourListProps) => {
     const { dogId } = props;
     const [toursStore] = useState(() => new ToursStore(dogId));
+
+    const sortedTours = toursStore.tours.slice().sort((tour1, tour2) => tour1.ts < tour2.ts ? 1 : -1);
     
     return (
         <View>
-            {toursStore.tours.map(tour => <TourComponent tour={tour} key={tour.id} />)}
+            {sortedTours.map(tour => <TourComponent tour={tour} key={tour.id} />)}
         </View>
     )
 });

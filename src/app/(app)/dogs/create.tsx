@@ -1,17 +1,19 @@
-import globalStyles from "@/global/GlobalStyle";
+import { DogData } from "@/dogs/DogsService";
 import Title from "@/global/components/Title";
 import { router } from "expo-router";
-import { useContext, useState } from "react";
-import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
+import { useContext } from "react";
+import { Alert, Button, StyleSheet, View } from "react-native";
+//@ts-ignore
 import { DogsStoreContext } from "../_layout";
+import DogFields from "@/dogs/components/DogFields";
 
 const CreateDog = () => {
-    const [name, setName] = useState('');
+    
     const dogsStore = useContext(DogsStoreContext);
 
-    const onPress = async () => {
+    const createDog = async (dog: DogData) => {
         try {
-            await dogsStore.createDog(name);
+            await dogsStore.createDog(dog);
             router.canGoBack() ? router.back() : router.replace('/dogs');
         } catch (error: any) {
             Alert.alert('Error', error.message)
@@ -21,22 +23,15 @@ const CreateDog = () => {
     return (
         <View style={styles.mainView}>
             <Title>Create new dog</Title>
-            <TextInput
-                onChangeText={setName}
-                value={name}
-                placeholder="Name"
-                autoCapitalize="words"
-                style={{...globalStyles.input, marginBottom: 10}}
-            />
-            <Button title="Create" onPress={onPress} disabled={name === ""} />
+            <DogFields buttonTitle="Create" addOnPress={createDog} />
         </View>
     )
 };
 
 const styles = StyleSheet.create({
     mainView: {
-        paddingHorizontal: 10
-    },
+        paddingHorizontal: 10,
+    }
 })
 
 export default CreateDog;

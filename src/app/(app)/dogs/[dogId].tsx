@@ -6,6 +6,9 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { DogsStoreContext } from "../_layout";
+import DogFields from "@/dogs/components/DogFields";
+import { Dog } from "@/dogs/DogsStore";
+import { DogData } from "@/dogs/DogsService";
 
 const DogProfile = () => {
     const { dogId } = useLocalSearchParams() as {dogId: string};
@@ -18,9 +21,9 @@ const DogProfile = () => {
         setName(dog?.name ?? '');
     }, [])
 
-    const onEdit = async () => {
+    const onEdit = async (newData: DogData, initialDog?: Dog) => {
         try {
-            await dog?.updateName(name);
+            await initialDog?.update(newData);
             router.canGoBack() ? router.back() : router.replace('/dogs');
         } catch (error: any) {
             Alert.alert('Error', error.message)
@@ -40,32 +43,20 @@ const DogProfile = () => {
         return <Text>Dog not found, please try again.</Text>
     }
     return (
-        <View>
+        <View style={styles.mainView}>
             <Title>Dog profile: {dog.name}</Title>
-
-            <View style={styles.row}>
-                <TextInput
-                    onChangeText={setName}
-                    value={name}
-                    placeholder="Name"
-                    autoCapitalize="words"
-                    style={globalStyles.input}
-                />
-                <Button title="Update name" onPress={onEdit} disabled={name === ""} />
-            </View>
+            <DogFields buttonTitle="Edit" addOnPress={onEdit} existingDog={dog} />
+            <TourList dogId={dogId} />
             <View style={styles.deleteButton}>
                 <Button title="Delete dog" color={theme.colors.danger} onPress={onDelete} />
             </View>
-            <TourList dogId={dogId} />
         </View>
     )
 };
 
 const styles = StyleSheet.create({
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
+    mainView: {
+        paddingHorizontal: 10,
     },
     deleteButton: {
         alignSelf: 'center',
