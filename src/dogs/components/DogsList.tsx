@@ -1,68 +1,33 @@
 import { PopulatedDogsStoreContext } from "@/app/(app)/_layout";
-import { Tour } from "@/tours/ToursStore";
+import globalStyles from "@/global/GlobalStyle";
+import { theme } from "@/global/theme";
 import { router } from "expo-router";
-import { Timestamp } from "firebase/firestore";
 import { observer } from "mobx-react-lite";
 import { useContext, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { DataTable } from 'react-native-paper';
-import { PopulatedDog } from "../PopulatedDogsStore";
-import { theme } from "@/global/theme";
-
-type SortingValue = "ascending" | "descending" | undefined
-type SortingType = {
-    name: SortingValue,
-    lastTour: SortingValue,
-    distance: SortingValue,
-}
-type Column = keyof SortingType
-type DogData = {
-    id: string,
-    name: string,
-    lastTour: string,
-    lastTs?: Timestamp,
-    distance: number,
-    femaleInHeat: boolean,
-}
+import { Column, DogTableData, SortingType, convPopDogsToTableData, sortLastTour } from "../DogListHelper";
 
 const DogsList = observer(() => {
     const populatedDogsStore = useContext(PopulatedDogsStoreContext);
     const dogs = populatedDogsStore.popDogs;
     const [page, setPage] = useState<number>(0);
 
-    const getLastTour = (tours: Tour[]) => {
-        if (tours.length === 0) {
-            return { lastTour: 'Long ago', lastTs: undefined }
-        }
-        const lastTs = tours.reduce((prev, curr) => prev.ts < curr.ts ? prev : curr).ts;
-        const lastTour = lastTs.toDate().toLocaleDateString('en-GB').slice(0, -5);
-        return { lastTour, lastTs };
-    }
-    const getDistance = (tours: Tour[]) => {
-        return tours.reduce((sum, curr) => sum + curr.length, 0);
-    }
-    const convertDogsToData = (dogs: PopulatedDog[]): DogData[] => {
-        return dogs.map(dog => {
-            const { lastTour, lastTs } = getLastTour(dog.tours);
-            return {
-                id: dog.id,
-                name: dog.name,
-                lastTour,
-                lastTs,
-                distance: getDistance(dog.tours),
-                femaleInHeat: dog.gender === 'female' && dog.heat
-            }
-        });
-    }
-    const [data, setData] = useState<DogData[]>([]);
+    const [days, setDays] = useState(30);
+    const [daysInput, setdaysInput] = useState(days.toString());
     useEffect(() => {
-        setData(convertDogsToData(dogs));
-    }, [dogs])
+        parseInt(daysInput) && setDays(Math.min(parseInt(daysInput), 30));
+    }, [daysInput])
 
-    const initialSorting = { name: undefined, lastTour: undefined, distance: undefined };
+    const [data, setData] = useState<DogTableData[]>([]);
+    useEffect(() => {
+        setData(convPopDogsToTableData(dogs, days));
+    }, [dogs, days])
+
+    const initialSorting = { name: undefined, lastTour: undefined, countWheel: undefined, countLead: undefined, distance: undefined };
     const [sorting, setSorting] = useState<SortingType>(initialSorting);
 
-    const itemsPerPage = 50;
+    const itemsPerPage = 60;
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, dogs.length);
 
@@ -74,14 +39,7 @@ const DogsList = observer(() => {
         }
         switch (column) {
             case 'lastTour':
-                setData(data.sort((dog1, dog2) => {
-                    const lasTs1 = dog1.lastTs ?? new Timestamp(0, 0);
-                    const lasTs2 = dog2.lastTs ?? new Timestamp(0, 0);
-                    return sorting.lastTour === 'ascending'
-                        ? lasTs1 < lasTs2 ? 1 : -1
-                        : lasTs1 > lasTs2 ? 1 : -1
-                }
-                ));
+                setData(data.sort((dog1, dog2) => sortLastTour(dog1, dog2, sorting.lastTour)));
                 break;
             default:
                 setData(data.sort((dog1, dog2) => sorting[column] === 'ascending'
@@ -93,14 +51,24 @@ const DogsList = observer(() => {
     }
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
+        <View style={styles.container}>
+            <View style={styles.row}>
+                <Text>Number of days:</Text>
+                <TextInput
+                    onChangeText={setdaysInput}
+                    value={daysInput}
+                    keyboardType="numeric"
+                    style={{ ...globalStyles.input, ...styles.numberInput }}
+                />
+            </View>
+            <ScrollView>
                 <DataTable>
                     <DataTable.Header theme={theme}>
                         <DataTable.Title
                             onPress={() => handleSort('name')}
                             sortDirection={sorting.name}
                             theme={theme}
+                            style={{ flex: 1.5 }}
                         >
                             Name
                         </DataTable.Title>
@@ -108,14 +76,32 @@ const DogsList = observer(() => {
                             onPress={() => handleSort('lastTour')}
                             sortDirection={sorting.lastTour}
                             theme={theme}
+                            style={styles.centered}
                         >
                             last tour
+                        </DataTable.Title>
+                        <DataTable.Title
+                            onPress={() => handleSort('countWheel')}
+                            sortDirection={sorting.countWheel}
+                            theme={theme}
+                            style={{ ...styles.centered, flex: 0.7 }}
+                        >
+                            wheel
+                        </DataTable.Title>
+                        <DataTable.Title
+                            onPress={() => handleSort('countLead')}
+                            sortDirection={sorting.countLead}
+                            theme={theme}
+                            style={{ ...styles.centered, flex: 0.7 }}
+                        >
+                            lead
                         </DataTable.Title>
                         <DataTable.Title
                             onPress={() => handleSort('distance')}
                             sortDirection={sorting.distance}
                             numeric
                             theme={theme}
+                            style={styles.centered}
                         >
                             distance
                         </DataTable.Title>
@@ -129,15 +115,26 @@ const DogsList = observer(() => {
                         >
                             <DataTable.Cell
                                 onPress={() => router.push({ pathname: "/dogs/[dogId]", params: { dogId: dog.id }, })}
-                                textStyle={{ color: theme.colors.text }}
+                                textStyle={styles.cellTextStyle}
+                                style={{ flex: 1.5 }}
                             >
                                 {dog.name}
                             </DataTable.Cell>
                             <DataTable.Cell
-                                textStyle={{ color: theme.colors.text }}
+                                textStyle={styles.cellTextStyle}
+                                style={styles.centered}
                             >{dog.lastTour}</DataTable.Cell>
                             <DataTable.Cell
-                                textStyle={{ color: theme.colors.text }}
+                                textStyle={styles.cellTextStyle}
+                                style={{ ...styles.centered, flex: 0.7 }}
+                            >{dog.countWheel || ''}</DataTable.Cell>
+                            <DataTable.Cell
+                                textStyle={styles.cellTextStyle}
+                                style={{ ...styles.centered, flex: 0.7 }}
+                            >{dog.countLead || ''}</DataTable.Cell>
+                            <DataTable.Cell
+                                textStyle={styles.cellTextStyle}
+                                style={styles.centered}
                                 numeric
                             >{dog.distance}</DataTable.Cell>
                         </DataTable.Row>
@@ -152,15 +149,33 @@ const DogsList = observer(() => {
                         theme={theme}
                     />
                 </DataTable>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     )
 });
 
 const styles = StyleSheet.create({
     container: {
-        margin: 20,
+        marginVertical: 10,
         borderRadius: 16,
+        flex: 1,
+    },
+    centered: {
+        justifyContent: 'center'
+    },
+    cellTextStyle: {
+        color: theme.colors.text,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 10,
+    },
+    numberInput: {
+        marginLeft: 5,
+        width: 50,
+        borderRadius: 8,
+        height: 40,
     },
 })
 
