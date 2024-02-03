@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { DataTable } from 'react-native-paper';
 import { PopulatedDog } from "../PopulatedDogsStore";
+import { theme } from "@/global/theme";
 
 type SortingValue = "ascending" | "descending" | undefined
 type SortingType = {
@@ -21,6 +22,7 @@ type DogData = {
     lastTour: string,
     lastTs?: Timestamp,
     distance: number,
+    femaleInHeat: boolean,
 }
 
 const DogsList = observer(() => {
@@ -47,7 +49,8 @@ const DogsList = observer(() => {
                 name: dog.name,
                 lastTour,
                 lastTs,
-                distance: getDistance(dog.tours)
+                distance: getDistance(dog.tours),
+                femaleInHeat: dog.gender === 'female' && dog.heat
             }
         });
     }
@@ -59,7 +62,7 @@ const DogsList = observer(() => {
     const initialSorting = { name: undefined, lastTour: undefined, distance: undefined };
     const [sorting, setSorting] = useState<SortingType>(initialSorting);
 
-    const itemsPerPage = 5;
+    const itemsPerPage = 50;
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, dogs.length);
 
@@ -93,16 +96,18 @@ const DogsList = observer(() => {
         <ScrollView>
             <View style={styles.container}>
                 <DataTable>
-                    <DataTable.Header>
+                    <DataTable.Header theme={theme}>
                         <DataTable.Title
                             onPress={() => handleSort('name')}
                             sortDirection={sorting.name}
+                            theme={theme}
                         >
                             Name
                         </DataTable.Title>
                         <DataTable.Title
                             onPress={() => handleSort('lastTour')}
                             sortDirection={sorting.lastTour}
+                            theme={theme}
                         >
                             last tour
                         </DataTable.Title>
@@ -110,20 +115,31 @@ const DogsList = observer(() => {
                             onPress={() => handleSort('distance')}
                             sortDirection={sorting.distance}
                             numeric
+                            theme={theme}
                         >
                             distance
                         </DataTable.Title>
                     </DataTable.Header>
 
                     {data.slice(from, to).map((dog) => (
-                        <DataTable.Row key={dog.id}>
+                        <DataTable.Row
+                            key={dog.id}
+                            theme={theme}
+                            style={{ opacity: dog.femaleInHeat ? 0.4 : 1 }}
+                        >
                             <DataTable.Cell
                                 onPress={() => router.push({ pathname: "/dogs/[dogId]", params: { dogId: dog.id }, })}
+                                textStyle={{ color: theme.colors.text }}
                             >
                                 {dog.name}
                             </DataTable.Cell>
-                            <DataTable.Cell>{dog.lastTour}</DataTable.Cell>
-                            <DataTable.Cell numeric>{dog.distance}</DataTable.Cell>
+                            <DataTable.Cell
+                                textStyle={{ color: theme.colors.text }}
+                            >{dog.lastTour}</DataTable.Cell>
+                            <DataTable.Cell
+                                textStyle={{ color: theme.colors.text }}
+                                numeric
+                            >{dog.distance}</DataTable.Cell>
                         </DataTable.Row>
                     ))}
 
@@ -133,6 +149,7 @@ const DogsList = observer(() => {
                         onPageChange={(page) => setPage(page)}
                         label={`${from + 1}-${to} of ${dogs.length}`}
                         numberOfItemsPerPage={itemsPerPage}
+                        theme={theme}
                     />
                 </DataTable>
             </View>
@@ -144,7 +161,6 @@ const styles = StyleSheet.create({
     container: {
         margin: 20,
         borderRadius: 16,
-        backgroundColor: 'black',
     },
 })
 

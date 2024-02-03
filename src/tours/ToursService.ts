@@ -31,9 +31,9 @@ export const readToursByDogId = async (dogId: string, testDb?: Firestore) => {
     return tours;
 };
 
-const get15DaysToursQuery = (testDb?: Firestore) => {
+const get30DaysToursQuery = (testDb?: Firestore) => {
     const toursCollectionGroup = collectionGroup(testDb ?? db, 'tours');
-    const date = Timestamp.fromDate(getXDaysAgo(15));
+    const date = Timestamp.fromDate(getXDaysAgo(30));
     const toursQuery = query(toursCollectionGroup, where('ts', '>', date));
     return toursQuery;
 }
@@ -49,8 +49,8 @@ export const readRtToursByDogId = (dogId: string, callback: ReadRtToursCallbackT
     return unsubscribe;
 };
 
-export const readRt15DaysTours = (callback: ReadRtToursCallbackType, testDb?: Firestore) => {
-    const toursQuery = get15DaysToursQuery(testDb);
+export const readRt30DaysTours = (callback: ReadRtToursCallbackType, testDb?: Firestore) => {
+    const toursQuery = get30DaysToursQuery(testDb);
     const unsubscribe = onSnapshot(toursQuery, (snap) => {
         const docs = extractArrayFromQuerySnapchot(snap.docs);
         const tours = docs.map(doc => extractFromDoc<TourType>(doc));

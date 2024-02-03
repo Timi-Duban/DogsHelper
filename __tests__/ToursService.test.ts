@@ -1,6 +1,6 @@
 import { RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { Firestore, Timestamp } from 'firebase/firestore';
-import { TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId, readToursByDogId, updateTour } from '../src/tours/ToursService';
+import { TourType, createDbTour, deleteTour, readRt30DaysTours, readRtToursByDogId, readToursByDogId, updateTour } from '../src/tours/ToursService';
 import { createInitialTour, getDbTours, initialDog, initialTour, initializeSimilarEnv } from './firestore/__utils__/Helpers';
 
 const dogId = initialDog.id;
@@ -36,7 +36,7 @@ describe('Test tours service', () => {
         expect(tours[0].id).toEqual(initialTour.id);
     });
 
-    it('Can READ 15 days real-time tour list.', async () => {
+    it('Can READ 30 days real-time tour list.', async () => {
         let callbackRun = false;
         const callback = (tours: TourType[]) => {
             expect(tours).toBeDefined();
@@ -44,7 +44,7 @@ describe('Test tours service', () => {
             expect(tours[0].id).toEqual(initialTour.id);
             callbackRun = true;
         }
-        const stopListenning = readRt15DaysTours(callback, firestore);
+        const stopListenning = readRt30DaysTours(callback, firestore);
         // Await some time for the callback to be called at first read
         await new Promise(r => setTimeout(r, 50));
         stopListenning();

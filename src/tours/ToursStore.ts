@@ -1,10 +1,10 @@
 import { Timestamp, Unsubscribe } from "firebase/firestore"
 import { action, makeAutoObservable, makeObservable, observable, onBecomeObserved, onBecomeUnobserved } from "mobx"
-import { Position, TourData, TourType, createDbTour, deleteTour, readRt15DaysTours, readRtToursByDogId } from "./ToursService"
+import { Position, TourData, TourType, createDbTour, deleteTour, readRt30DaysTours, readRtToursByDogId } from "./ToursService"
 
 /**
  * A Store that contains a tour list.
- * It can either be all the tours in DB for a specific dog or the last 15 days tours for all dogs.
+ * It can either be all the tours in DB for a specific dog or the last 30 days tours for all dogs.
  */
 export class ToursStore {
     tours: Tour[] = []
@@ -12,7 +12,7 @@ export class ToursStore {
 
     /**
      * Creates a Store that contains a tour list.
-    * It can either be all the tours in DB for a specific dog or the last 15 days tours for all dogs if target is null.
+    * It can either be all the tours in DB for a specific dog or the last 30 days tours for all dogs if target is null.
      * @param target either the specific dogId or null. 
      */
     constructor(target: string | null) {
@@ -36,7 +36,7 @@ export class ToursStore {
 
         let stop: Unsubscribe
         if (target === null) {
-            stop = readRt15DaysTours(callback);
+            stop = readRt30DaysTours(callback);
         } else {
             stop = readRtToursByDogId(target, callback);
         }
